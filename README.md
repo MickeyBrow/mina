@@ -5,4 +5,9 @@
 
     The second section will be what im calling "Connect". This would be like a dating app but for content creators to link up for collabs. The second could be a tinder clone until I am able to think of something more creative for it.
 
-    Another section would have to be a profile section that allows for the content creator to customize their profile for the connect part. Basically just allowing for the user to upload a profile picture, add a bio, and their location that they want to look at for the connect.
+    Another section would have to be a profile section that allows for the content creator to customize their profile for the connect part. Basically just allowing for the user to upload a profile picture, add a bio, and their location that they want to look at for the connect.\
+
+- March 6 2023 \
+    Trying to set up a realtime database to the app. This would allow for me to get the current users data using the uid that is passed in the URL. The intial step is to try and get the users name, email, and uid to be saved in the DB when ever their account is made on the register page. 
+    
+    For some reason the DB is not saving the users data when creating the account. Need to look at a tutorial or something to see how other people implement the DB. 
