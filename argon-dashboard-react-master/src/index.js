@@ -26,6 +26,7 @@ import "assets/scss/argon-dashboard-react.scss";
 import AdminLayout from "layouts/Admin.js";
 import AuthLayout from "layouts/Auth.js";
 import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -36,7 +37,8 @@ const firebaseConfig = {
   storageBucket: "mina-5f4b8.appspot.com",
   messagingSenderId: "143634310712",
   appId: "1:143634310712:web:4e833a19e60906eb8a68cd",
-  measurementId: "G-7FWFM4KPMT"
+  measurementId: "G-7FWFM4KPMT",
+  databaseURL: "https://mina-5f4b8-default-rtdb.firebaseio.com/"
 };
 
 const app = initializeApp(firebaseConfig);
