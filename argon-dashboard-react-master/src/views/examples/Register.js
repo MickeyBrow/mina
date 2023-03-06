@@ -33,44 +33,31 @@ import {
 } from "reactstrap";
 
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set } from "firebase/database";
+import { db } from "firebase_init"
+import { ref, set } from "firebase/database";
 
 function onCreateAccount() {
   const userEmail = document.getElementById("userEmail").value;
   const userPassword = document.getElementById("userPassword").value;
   const userName = document.getElementById("userName").value;
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyD9ZKP77NW-GVwhvl0ZsEBnzDletZt15F8",
-    authDomain: "mina-5f4b8.firebaseapp.com",
-    projectId: "mina-5f4b8",
-    storageBucket: "mina-5f4b8.appspot.com",
-    messagingSenderId: "143634310712",
-    appId: "1:143634310712:web:4e833a19e60906eb8a68cd",
-    measurementId: "G-7FWFM4KPMT",
-    databaseURL: "https://mina-5f4b8-default-rtdb.firebaseio.com/"
-  };
-  
-  const app = initializeApp(firebaseConfig);
   const auth = getAuth();
   createUserWithEmailAndPassword(auth, userEmail, userPassword)
   .then((userCredential) => {
     // Account Created
-    console.log(userCredential);
-    // Need to add the user to the DB with the email and the uid from the userCredentials
-    window.location.replace("http://localhost:3000/auth/login");
-
-    const db = getDatabase(app);
-    set(ref(db, 'Profile'), {
+    set(ref(db, 'Profiles/' + userCredential.user.uid), {
+      name: userName,
       email: userEmail,
-      uid: userCredential.user.uid,
-      name : userName
-    });
+      uid : userCredential.user.uid
+    })
+    .then(() =>{
+      window.location.replace("http://localhost:3000/auth/login");
+    })
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
+    console.log("Account Error")
     // ..
   });
 }
