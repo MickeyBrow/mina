@@ -11,3 +11,7 @@
     Trying to set up a realtime database to the app. This would allow for me to get the current users data using the uid that is passed in the URL. The intial step is to try and get the users name, email, and uid to be saved in the DB when ever their account is made on the register page. 
     
     For some reason the DB is not saving the users data when creating the account. Need to look at a tutorial or something to see how other people implement the DB. 
+    
+    (Later in the day) Got the DB working so now when a new account is made, a new field is made under the profile folder with the uid, name, and email.
+    
+    Also did some updating to the profile page so the info from the DB populates the page. Then started the barebones for allowing the user to update their information. Still have to finish that though.
