@@ -33,7 +33,7 @@ import {
 import { useState } from "react";
 import UserHeader from "components/Headers/UserHeader.js";
 import { db } from "firebase_init"
-import { ref, child, get } from "firebase/database";
+import { ref, child, get, update } from "firebase/database";
 
 const url = window.location.href;
 const uid = url.split("/").pop();
@@ -43,6 +43,14 @@ function updateProfile() {
   const userCity = document.getElementById("input-city").value;
   const userState = document.getElementById("input-state").value;
   const userBio = document.getElementById("input-bio").value;
+
+  const updates = {}
+  updates['Profiles/' + uid + "/birthday"] = userBirthday;
+  updates['Profiles/' + uid + "/city"] = userCity;
+  updates['Profiles/' + uid + "/state"] = userState;
+  updates['Profiles/' + uid + "/about_me"] = userBio;
+
+  update(ref(db), updates)
 }
 
 const Profile = () => {
@@ -51,6 +59,7 @@ const Profile = () => {
   const [lastName, setLastName] = useState("Last Name");
   const [email, setEmail] = useState("Email");
   const [age, setAge] = useState("99");
+  const [location, setLocatioon] = useState("City, State")
 
   const dbRef = ref(db);
   get(child(dbRef, `Profiles/${uid}`)).then((snapshot) => {
@@ -59,6 +68,7 @@ const Profile = () => {
       setEmail(snapshot.val().email);
       setFirstName(snapshot.val().name.split(" ")[0]);
       setLastName(snapshot.val().name.split(" ")[1]);
+      setLocatioon(snapshot.val().city + ", " + snapshot.val().state);
     } else {
       console.log("No data available");
     }
@@ -135,7 +145,7 @@ const Profile = () => {
                   </h3>
                   <div className="h5 font-weight-300">
                     <i className="ni location_pin mr-2" />
-                    Bucharest, Romania
+                    {location}
                   </div>
                   <div className="h5 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
