@@ -30,9 +30,35 @@ import {
   Col
 } from "reactstrap";
 // core components
+import { useState } from "react";
 import UserHeader from "components/Headers/UserHeader.js";
+import { db } from "firebase_init"
+import { ref, child, get } from "firebase/database";
 
 const Profile = () => {
+  const url = window.location.href;
+  const uid = url.split("/").pop();
+
+  const [fullName, setFullName] = useState("Full Name");
+  const [firstName, setFirstName] = useState("First Name");
+  const [lastName, setLastName] = useState("Last Name");
+  const [email, setEmail] = useState("Email");
+  const [age, setAge] = useState("99");
+
+  const dbRef = ref(db);
+  get(child(dbRef, `Profiles/${uid}`)).then((snapshot) => {
+    if (snapshot.exists()) {
+      setFullName(snapshot.val().name);
+      setEmail(snapshot.val().email);
+      setFirstName(snapshot.val().name.split(" ")[0]);
+      setLastName(snapshot.val().name.split(" ")[1]);
+    } else {
+      console.log("No data available");
+    }
+  }).catch((error) => {
+    console.error(error);
+  });
+
   return (
     <>
       <UserHeader />
@@ -97,8 +123,8 @@ const Profile = () => {
                 </Row>
                 <div className="text-center">
                   <h3>
-                    Jessica Jones
-                    <span className="font-weight-light">, 27</span>
+                    {fullName}
+                    <span className="font-weight-light">, {age}</span>
                   </h3>
                   <div className="h5 font-weight-300">
                     <i className="ni location_pin mr-2" />
@@ -139,7 +165,7 @@ const Profile = () => {
                       onClick={(e) => e.preventDefault()}
                       size="sm"
                     >
-                      Settings
+                      Update
                     </Button>
                   </Col>
                 </Row>
@@ -155,15 +181,14 @@ const Profile = () => {
                         <FormGroup>
                           <label
                             className="form-control-label"
-                            htmlFor="input-username"
+                            htmlFor="input-birthday"
                           >
-                            Username
+                            Birthday
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue="lucky.jesse"
-                            id="input-username"
-                            placeholder="Username"
+                            id="input-birthday"
+                            placeholder="XX/XX/XXXX"
                             type="text"
                           />
                         </FormGroup>
@@ -179,7 +204,7 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-email"
-                            placeholder="jesse@example.com"
+                            placeholder={email}
                             type="email"
                           />
                         </FormGroup>
@@ -196,9 +221,8 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue="Lucky"
                             id="input-first-name"
-                            placeholder="First name"
+                            placeholder={firstName}
                             type="text"
                           />
                         </FormGroup>
@@ -213,9 +237,8 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue="Jesse"
                             id="input-last-name"
-                            placeholder="Last name"
+                            placeholder={lastName}
                             type="text"
                           />
                         </FormGroup>
