@@ -33,7 +33,7 @@ import {
 import { useState } from "react";
 import UserHeader from "components/Headers/UserHeader.js";
 import { db } from "firebase_init"
-import { ref, child, get, update } from "firebase/database";
+import { ref, child, get, update } from "firebase/database"
 
 const url = window.location.href;
 const uid = url.split("/").pop();
@@ -43,12 +43,14 @@ function updateProfile() {
   const userCity = document.getElementById("input-city").value;
   const userState = document.getElementById("input-state").value;
   const userBio = document.getElementById("input-bio").value;
+  const userCategory = document.getElementById("input-category").value;
 
   const updates = {}
   updates['Profiles/' + uid + "/birthday"] = userBirthday;
   updates['Profiles/' + uid + "/city"] = userCity;
   updates['Profiles/' + uid + "/state"] = userState;
   updates['Profiles/' + uid + "/about_me"] = userBio;
+  updates['Profiles/' + uid + "/category"] = userCategory;
 
   update(ref(db), updates)
 }
@@ -59,7 +61,8 @@ const Profile = () => {
   const [lastName, setLastName] = useState("Last Name");
   const [email, setEmail] = useState("Email");
   const [age, setAge] = useState("99");
-  const [location, setLocatioon] = useState("City, State")
+  const [location, setLocatioon] = useState("City, State");
+  const [userCategory, setUserCategory] = useState();
 
   const dbRef = ref(db);
   get(child(dbRef, `Profiles/${uid}`)).then((snapshot) => {
@@ -69,6 +72,7 @@ const Profile = () => {
       setFirstName(snapshot.val().name.split(" ")[0]);
       setLastName(snapshot.val().name.split(" ")[1]);
       setLocatioon(snapshot.val().city + ", " + snapshot.val().state);
+      setUserCategory(snapshot.val().category);
     } else {
       console.log("No data available");
     }
@@ -149,21 +153,12 @@ const Profile = () => {
                   </div>
                   <div className="h5 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
-                    Solution Manager - Creative Tim Officer
+                    {userCategory} - Creative Tim Officer
                   </div>
                   <div>
                     <i className="ni education_hat mr-2" />
                     University of Computer Science
                   </div>
-                  <hr className="my-4" />
-                  <p>
-                    Ryan — the name taken by Melbourne-raised, Brooklyn-based
-                    Nick Murphy — writes, performs and records all of his own
-                    music.
-                  </p>
-                  <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                    Show more
-                  </a>
                 </div>
               </CardBody>
             </Card>
@@ -291,6 +286,21 @@ const Profile = () => {
                             type="text"
                           />
                         </FormGroup>
+                      </Col>
+                      <Col lg="6">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-category"
+                          >
+                            Category
+                          </label>
+                          <select name="Option" id="input-category">
+                            <option value="option 1">Option 1</option>
+                            <option value="option 2">Option 2</option>
+                          </select>
+                        </FormGroup>
+
                       </Col>
                     </Row>
                   </div>
