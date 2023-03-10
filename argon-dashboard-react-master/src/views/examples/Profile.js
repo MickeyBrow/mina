@@ -39,18 +39,20 @@ const url = window.location.href;
 const uid = url.split("/").pop();
 
 function updateProfile() {
-  const userBirthday = document.getElementById("input-birthday").value;
+  const userAge = document.getElementById("input-age").value;
   const userCity = document.getElementById("input-city").value;
   const userState = document.getElementById("input-state").value;
   const userBio = document.getElementById("input-bio").value;
+  const userPlatform = document.getElementById("input-platform").value;
   const userCategory = document.getElementById("input-category").value;
 
   const updates = {}
-  updates['Profiles/' + uid + "/birthday"] = userBirthday;
+  updates['Profiles/' + uid + "/age"] = userAge;
   updates['Profiles/' + uid + "/city"] = userCity;
   updates['Profiles/' + uid + "/state"] = userState;
   updates['Profiles/' + uid + "/about_me"] = userBio;
   updates['Profiles/' + uid + "/category"] = userCategory;
+  updates['Profiles/' + uid + "/platform"] = userPlatform;
 
   update(ref(db), updates)
 }
@@ -63,6 +65,8 @@ const Profile = () => {
   const [age, setAge] = useState("99");
   const [location, setLocatioon] = useState("City, State");
   const [userCategory, setUserCategory] = useState();
+  const [userBio, setUserBio] = useState();
+  const [userPlatform, setUserPlatform] = useState();
 
   const dbRef = ref(db);
   get(child(dbRef, `Profiles/${uid}`)).then((snapshot) => {
@@ -73,6 +77,9 @@ const Profile = () => {
       setLastName(snapshot.val().name.split(" ")[1]);
       setLocatioon(snapshot.val().city + ", " + snapshot.val().state);
       setUserCategory(snapshot.val().category);
+      setUserBio(snapshot.val().about_me);
+      setUserPlatform(snapshot.val().platform);
+      setAge(snapshot.val().age);
     } else {
       console.log("No data available");
     }
@@ -128,16 +135,16 @@ const Profile = () => {
                   <div className="col">
                     <div className="card-profile-stats d-flex justify-content-center mt-md-5">
                       <div>
-                        <span className="heading">22</span>
-                        <span className="description">Friends</span>
+                        <span className="heading">N/A</span>
+                        <span className="description">TikTok</span>
                       </div>
                       <div>
-                        <span className="heading">10</span>
-                        <span className="description">Photos</span>
+                        <span className="heading">N/A</span>
+                        <span className="description">Youtube</span>
                       </div>
                       <div>
-                        <span className="heading">89</span>
-                        <span className="description">Comments</span>
+                        <span className="heading">N/A</span>
+                        <span className="description">Instagram</span>
                       </div>
                     </div>
                   </div>
@@ -153,11 +160,11 @@ const Profile = () => {
                   </div>
                   <div className="h5 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
-                    {userCategory} - Creative Tim Officer
+                    {userPlatform} - {userCategory}
                   </div>
                   <div>
                     <i className="ni education_hat mr-2" />
-                    University of Computer Science
+                    {userBio}
                   </div>
                 </div>
               </CardBody>
@@ -193,14 +200,14 @@ const Profile = () => {
                         <FormGroup>
                           <label
                             className="form-control-label"
-                            htmlFor="input-birthday"
+                            htmlFor="input-age"
                           >
-                            Birthday
+                            Age
                           </label>
                           <Input
                             className="form-control-alternative"
-                            id="input-birthday"
-                            placeholder="XX/XX/XXXX"
+                            id="input-age"
+                            placeholder={age}
                             type="text"
                           />
                         </FormGroup>
@@ -216,7 +223,7 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-email"
-                            placeholder={email}
+                            value={email}
                             type="email"
                           />
                         </FormGroup>
@@ -266,7 +273,7 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-city"
-                            placeholder={firstName}
+                            placeholder={location.split(",")[0]}
                             type="text"
                           />
                         </FormGroup>
@@ -282,7 +289,23 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-state"
-                            placeholder={firstName}
+                            placeholder={location.split(",")[1]}
+                            type="text"
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col lg="6">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-platform"
+                          >
+                            Platform
+                          </label>
+                          <Input
+                            className="form-control-alternative"
+                            id="input-platform"
+                            placeholder={userPlatform}
                             type="text"
                           />
                         </FormGroup>
@@ -295,12 +318,13 @@ const Profile = () => {
                           >
                             Category
                           </label>
-                          <select name="Option" id="input-category">
-                            <option value="option 1">Option 1</option>
-                            <option value="option 2">Option 2</option>
-                          </select>
+                          <Input
+                            className="form-control-alternative"
+                            id="input-category"
+                            placeholder={userCategory}
+                            type="text"
+                          />
                         </FormGroup>
-
                       </Col>
                     </Row>
                   </div>
@@ -312,11 +336,9 @@ const Profile = () => {
                       <label>About Me</label>
                       <Input
                         className="form-control-alternative"
-                        placeholder="A few words about you ..."
+                        placeholder={userBio}
                         id="input-bio"
                         rows="4"
-                        defaultValue="A beautiful Dashboard for Bootstrap 4. It is Free and
-                        Open Source."
                         type="textarea"
                       />
                     </FormGroup>
