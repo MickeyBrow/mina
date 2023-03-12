@@ -30,10 +30,12 @@ import {
   Col
 } from "reactstrap";
 // core components
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UserHeader from "components/Headers/UserHeader.js";
-import { db } from "firebase_init"
-import { ref, child, get, update } from "firebase/database"
+import { db, storage } from "firebase_init";
+import { ref, child, get, update } from "firebase/database";
+import { ref as ref_storage, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { v4 } from 'uuid';
 
 const url = window.location.href;
 const uid = url.split("/").pop();
@@ -54,7 +56,7 @@ function updateProfile() {
   updates['Profiles/' + uid + "/category"] = userCategory;
   updates['Profiles/' + uid + "/platform"] = userPlatform;
 
-  update(ref(db), updates)
+  update(ref(db), updates);
 }
 
 const Profile = () => {
@@ -67,6 +69,30 @@ const Profile = () => {
   const [userCategory, setUserCategory] = useState();
   const [userBio, setUserBio] = useState();
   const [userPlatform, setUserPlatform] = useState();
+
+  const [imageList, setImageList] = useState([]);
+  const [imageUpload, setImageUpload] = useState(null);
+
+  const uploadImage = () => {
+    if (imageUpload == null) return;
+    const imageRef = ref_storage(storage, `Users/${uid}/${imageUpload.name + v4()}`);
+    uploadBytes(imageRef, imageUpload)
+    .then(() => {
+      //Image uploaded successfully
+      console.log("Image Uploaded")
+    })
+  }
+
+  //Grab images for this user when the page loads
+  useEffect(() => {
+    listAll(ref_storage(storage, `Users/${uid}`)).then((response) => {
+      response.items.forEach((item) => {
+        getDownloadURL(item).then((url) => {
+          setImageList((prev) => [...prev, url]);
+        })
+      })
+    })
+  }, []);
 
   const dbRef = ref(db);
   get(child(dbRef, `Profiles/${uid}`)).then((snapshot) => {
@@ -180,7 +206,6 @@ const Profile = () => {
                   <Col className="text-right" xs="4">
                     <Button
                       color="primary"
-                      href="#pablo"
                       onClick={updateProfile}
                       size="sm"
                     >
@@ -333,7 +358,7 @@ const Profile = () => {
                   <h6 className="heading-small text-muted mb-4">About me</h6>
                   <div className="pl-lg-4">
                     <FormGroup>
-                      <label>About Me</label>
+                      <label>Bio</label>
                       <Input
                         className="form-control-alternative"
                         placeholder={userBio}
@@ -342,6 +367,37 @@ const Profile = () => {
                         type="textarea"
                       />
                     </FormGroup>
+                  </div>
+                  <hr className="my-4" />
+                  <h6 className="heading-small text-muted mb-4">Profile Picture</h6>
+                  <div className="pl-lg-4">
+                    <FormGroup>
+                      <Col lg="6">
+                        <Row className="align-items-center">
+                          <Col xs="8">
+                            <Input
+                              type="file"
+                              onChange={(event) => {setImageUpload(event.target.files[0]);}}
+                            />
+                          </Col>
+                          <Col className="text-right" xs="4">
+                            <Button
+                              color="primary"
+                              onClick={() => {}}
+                              size="sm"
+                            >
+                              Upload Picutre
+                            </Button>
+                          </Col>
+                        </Row>
+                      </Col>
+                    </FormGroup>
+                  </div>
+                  <h6 className="heading-small text-muted mb-4">Current Picutres</h6>
+                  <div>
+                    {imageList.map((url => {
+                      return <img src={url} />
+                    }))}
                   </div>
                 </Form>
               </CardBody>

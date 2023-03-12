@@ -48,16 +48,23 @@ var routes = [
   // },
   {
     path: "/user-profile",
-    name: "User Profile",
+    name: "Profile",
     icon: "ni ni-single-02 text-yellow",
     component: Profile,
     layout: "/admin"
   },
   {
     path: "/tables",
-    name: "Connections",
+    name: "Connect",
     icon: "ni ni-bullet-list-67 text-red",
     component: Tables,
+    layout: "/admin"
+  },
+  {
+    path: "/message",
+    name: "Message",
+    icon: "ni ni-bullet-list-67 text-red",
+    component: Message,
     layout: "/admin"
   },
   {
