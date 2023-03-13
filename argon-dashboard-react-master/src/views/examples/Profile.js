@@ -378,12 +378,13 @@ const Profile = () => {
                             <Input
                               type="file"
                               onChange={(event) => {setImageUpload(event.target.files[0]);}}
+                              accept="image/png, image/jpeg"
                             />
                           </Col>
                           <Col className="text-right" xs="4">
                             <Button
                               color="primary"
-                              onClick={() => {}}
+                              onClick={uploadImage}
                               size="sm"
                             >
                               Upload Picutre
@@ -394,11 +395,21 @@ const Profile = () => {
                     </FormGroup>
                   </div>
                   <h6 className="heading-small text-muted mb-4">Current Picutres</h6>
-                  <div>
-                    {imageList.map((url => {
-                      return <img src={url} />
-                    }))}
-                  </div>
+                  <FormGroup>
+                    <Col lg="6">
+                      <Row className="align-items-center">
+                        <div>
+                          {imageList.map((url => {
+                            return <img 
+                              src={url}
+                              width="200" 
+                              height="200"
+                            />
+                          }))}
+                        </div>
+                      </Row>
+                    </Col>
+                  </FormGroup>
                 </Form>
               </CardBody>
             </Card>
