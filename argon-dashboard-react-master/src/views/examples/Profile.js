@@ -30,15 +30,15 @@ import {
   Col
 } from "reactstrap";
 // core components
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import UserHeader from "components/Headers/UserHeader.js";
 import { db, storage } from "firebase_init";
 import { ref, child, get, update } from "firebase/database";
 import { ref as ref_storage, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 import { v4 } from 'uuid';
 
-const url = window.location.href;
-const uid = url.split("/").pop();
+const currentUrl = window.location.href;
+const uid = currentUrl.split("/").pop();
 
 function updateProfile() {
   const userAge = document.getElementById("input-age").value;
@@ -47,6 +47,8 @@ function updateProfile() {
   const userBio = document.getElementById("input-bio").value;
   const userPlatform = document.getElementById("input-platform").value;
   const userCategory = document.getElementById("input-category").value;
+  const userFirstName = document.getElementById("input-first-name").value;
+  const userLastName = document.getElementById("input-last-name").value;
 
   const updates = {}
   updates['Profiles/' + uid + "/age"] = userAge;
@@ -55,23 +57,28 @@ function updateProfile() {
   updates['Profiles/' + uid + "/about_me"] = userBio;
   updates['Profiles/' + uid + "/category"] = userCategory;
   updates['Profiles/' + uid + "/platform"] = userPlatform;
+  updates['Profiles/' + uid + "/name"] = userFirstName + " " + userLastName;
 
   update(ref(db), updates);
+  window.location.reload(false);
 }
 
 const Profile = () => {
   const [fullName, setFullName] = useState("Full Name");
-  const [firstName, setFirstName] = useState("First Name");
-  const [lastName, setLastName] = useState("Last Name");
+  const [firstName, setFirstName] = useState();
+  const [lastName, setLastName] = useState();
   const [email, setEmail] = useState("Email");
-  const [age, setAge] = useState("99");
-  const [location, setLocatioon] = useState("City, State");
+  const [age, setAge] = useState();
+  const [userCity, setUserCity] = useState();
+  const [userState, setUserState] = useState();
   const [userCategory, setUserCategory] = useState();
   const [userBio, setUserBio] = useState();
   const [userPlatform, setUserPlatform] = useState();
 
   const [imageList, setImageList] = useState([]);
   const [imageUpload, setImageUpload] = useState(null);
+
+  const [profilePicture, setProfilePicture] = useState("");
 
   const uploadImage = () => {
     if (imageUpload == null) return;
@@ -81,6 +88,14 @@ const Profile = () => {
       //Image uploaded successfully
       console.log("Image Uploaded")
     })
+  }
+
+  const updateAvi = (image) => {
+    setProfilePicture(image);
+    
+    const updates = {}
+    updates['Profiles/' + uid + "/avi"] = image;
+    update(ref(db), updates);
   }
 
   //Grab images for this user when the page loads
@@ -101,11 +116,13 @@ const Profile = () => {
       setEmail(snapshot.val().email);
       setFirstName(snapshot.val().name.split(" ")[0]);
       setLastName(snapshot.val().name.split(" ")[1]);
-      setLocatioon(snapshot.val().city + ", " + snapshot.val().state);
+      setUserCity(snapshot.val().city);
+      setUserState(snapshot.val().state);
       setUserCategory(snapshot.val().category);
       setUserBio(snapshot.val().about_me);
       setUserPlatform(snapshot.val().platform);
       setAge(snapshot.val().age);
+      setProfilePicture(snapshot.val().avi);
     } else {
       console.log("No data available");
     }
@@ -124,13 +141,14 @@ const Profile = () => {
               <Row className="justify-content-center">
                 <Col className="order-lg-2" lg="3">
                   <div className="card-profile-image">
-                    <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                      <img
-                        alt="..."
-                        className="rounded-circle"
-                        src={require("../../assets/img/theme/team-4-800x800.jpg")}
-                      />
-                    </a>
+                    <img
+                      alt="..."
+                      id="user-profile-picture"
+                      className="rounded-circle"
+                      src={profilePicture}
+                      width="300"
+                      height="200"
+                    />
                   </div>
                 </Col>
               </Row>
@@ -182,7 +200,7 @@ const Profile = () => {
                   </h3>
                   <div className="h5 font-weight-300">
                     <i className="ni location_pin mr-2" />
-                    {location}
+                    {userCity}, {userState}
                   </div>
                   <div className="h5 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
@@ -232,8 +250,8 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-age"
-                            placeholder={age}
                             type="text"
+                            defaultValue={age}
                           />
                         </FormGroup>
                       </Col>
@@ -248,8 +266,8 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-email"
-                            value={email}
                             type="email"
+                            value={email}
                           />
                         </FormGroup>
                       </Col>
@@ -266,8 +284,8 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-first-name"
-                            placeholder={firstName}
                             type="text"
+                            defaultValue={firstName}
                           />
                         </FormGroup>
                       </Col>
@@ -282,8 +300,8 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-last-name"
-                            placeholder={lastName}
                             type="text"
+                            defaultValue={lastName}
                           />
                         </FormGroup>
                       </Col>
@@ -298,8 +316,8 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-city"
-                            placeholder={location.split(",")[0]}
                             type="text"
+                            defaultValue={userCity}
                           />
                         </FormGroup>
                       </Col>
@@ -314,8 +332,8 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-state"
-                            placeholder={location.split(",")[1]}
                             type="text"
+                            defaultValue={userState}
                           />
                         </FormGroup>
                       </Col>
@@ -330,8 +348,8 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-platform"
-                            placeholder={userPlatform}
                             type="text"
+                            defaultValue={userPlatform}
                           />
                         </FormGroup>
                       </Col>
@@ -346,8 +364,8 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-category"
-                            placeholder={userCategory}
                             type="text"
+                            defaultValue={userCategory}
                           />
                         </FormGroup>
                       </Col>
@@ -361,7 +379,7 @@ const Profile = () => {
                       <label>Bio</label>
                       <Input
                         className="form-control-alternative"
-                        placeholder={userBio}
+                        defaultValue={userBio}
                         id="input-bio"
                         rows="4"
                         type="textarea"
@@ -395,21 +413,30 @@ const Profile = () => {
                     </FormGroup>
                   </div>
                   <h6 className="heading-small text-muted mb-4">Current Picutres</h6>
-                  <FormGroup>
-                    <Col lg="6">
-                      <Row className="align-items-center">
+                  <div className="pl-lg-4">
+                    <FormGroup>
+                      <Row>
                         <div>
                           {imageList.map((url => {
-                            return <img 
-                              src={url}
-                              width="200" 
-                              height="200"
-                            />
+                            return (
+                              <>
+                                <div>
+                                  <Button onClick={() => updateAvi(url)}>
+                                    <img
+                                      alt="..."
+                                      src={url}
+                                      width="200"
+                                      height="200"
+                                    />
+                                  </Button>
+                                </div>
+                              </>
+                            )
                           }))}
                         </div>
                       </Row>
-                    </Col>
-                  </FormGroup>
+                    </FormGroup>
+                  </div>
                 </Form>
               </CardBody>
             </Card>
