@@ -34,7 +34,7 @@ import React, { useState, useEffect } from "react";
 import UserHeader from "components/Headers/UserHeader.js";
 import { db, storage } from "firebase_init";
 import { ref, child, get, update } from "firebase/database";
-import { ref as ref_storage, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { ref as ref_storage, uploadBytes, listAll, getDownloadURL, deleteObject } from "firebase/storage";
 import { v4 } from 'uuid';
 
 const currentUrl = window.location.href;
@@ -98,6 +98,15 @@ const Profile = () => {
     update(ref(db), updates);
   }
 
+  const deleteImage = (image) => {
+    // deleteObject(ref_storage(storage, `Users/${uid}/${image}`)).then(() => {
+    //   //Image was deleted
+    //   console.log("Image was deleted");
+    // }).catch((error) => {
+    //   //There was an error
+    // });
+  }
+
   //Grab images for this user when the page loads
   useEffect(() => {
     listAll(ref_storage(storage, `Users/${uid}`)).then((response) => {
@@ -158,7 +167,7 @@ const Profile = () => {
                     className="mr-4"
                     color="info"
                     href="#pablo"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={() => {window.location.replace("http://localhost:3000/admin/connect/" + uid)}}
                     size="sm"
                   >
                     Connect
@@ -167,7 +176,7 @@ const Profile = () => {
                     className="float-right"
                     color="default"
                     href="#pablo"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={() => {window.location.replace("http://localhost:3000/admin/message/" + uid)}}
                     size="sm"
                   >
                     Message
@@ -429,6 +438,7 @@ const Profile = () => {
                                       height="200"
                                     />
                                   </Button>
+                                  <Button onClick={() => deleteImage(url)}>Delete</Button>
                                 </div>
                               </>
                             )

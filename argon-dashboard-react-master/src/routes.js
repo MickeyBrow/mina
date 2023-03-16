@@ -27,7 +27,7 @@ var routes = [
   {
     path: "/index",
     name: "Dashboard",
-    icon: "ni ni-tv-2 text-primary",
+    icon: "ni ni-chart-bar-32 text-primary",
     component: Index,
     layout: "/admin"
   },
@@ -38,31 +38,24 @@ var routes = [
     component: Icons,
     layout: "/admin"
   },
-  // {
-  //   path: "/message",
-  //   name: "Message",
-  //   icon: "ni ni-email-83",
-  //   component: Message,
-  //   layout: "/admin"
-  // },
   {
     path: "/user-profile",
     name: "Profile",
-    icon: "ni ni-single-02 text-yellow",
+    icon: "ni ni-circle-08 text-yellow",
     component: Profile,
     layout: "/admin"
   },
   {
-    path: "/tables",
+    path: "/connect",
     name: "Connect",
-    icon: "ni ni-bullet-list-67 text-red",
+    icon: "ni ni-world text-green",
     component: Tables,
     layout: "/admin"
   },
   {
     path: "/message",
     name: "Message",
-    icon: "ni ni-bullet-list-67 text-red",
+    icon: "ni ni-email-83",
     component: Message,
     layout: "/admin"
   },
