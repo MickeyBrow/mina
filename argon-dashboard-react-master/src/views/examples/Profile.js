@@ -32,6 +32,7 @@ import {
 // core components
 import React, { useState, useEffect } from "react";
 import UserHeader from "components/Headers/UserHeader.js";
+import { state_opts as states } from "states.js";
 import { db, storage } from "firebase_init";
 import { ref, child, get, update } from "firebase/database";
 import { ref as ref_storage, uploadBytes, listAll, getDownloadURL, deleteObject } from "firebase/storage";
@@ -66,7 +67,7 @@ function updateProfile() {
   window.location.reload(false);
 }
 
-const Connect = () => {
+const Profile = () => {
   const [fullName, setFullName] = useState("Full Name");
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
@@ -342,9 +343,19 @@ const Connect = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-state"
-                            type="text"
-                            defaultValue={userState}
-                          />
+                            type="select"
+                          >
+                            <option value={userState}>{userState}</option>
+                            {states.map((state => {
+                              return (
+                                <>
+                                  <option value={state}>
+                                    {state}
+                                  </option>
+                                </>
+                              )
+                            }))}
+                          </Input>
                         </FormGroup>
                       </Col>
                       <Col lg="6">
@@ -358,9 +369,13 @@ const Connect = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-platform"
-                            type="text"
-                            defaultValue={userPlatform}
-                          />
+                            type="select"
+                          >
+                            <option value={userPlatform}>{userPlatform}</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="Youtube">Youtube</option>
+                            <option value="Instagram">Instagram</option>
+                          </Input>
                         </FormGroup>
                       </Col>
                       <Col lg="6">
@@ -458,4 +473,4 @@ const Connect = () => {
   );
 };
 
-export default Connect;
+export default Profile;
