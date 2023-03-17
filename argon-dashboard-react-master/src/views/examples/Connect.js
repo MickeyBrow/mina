@@ -66,7 +66,7 @@ function updateProfile() {
   window.location.reload(false);
 }
 
-const Connect = () => {
+const Profile = () => {
   const [fullName, setFullName] = useState("Full Name");
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
@@ -458,4 +458,4 @@ const Connect = () => {
   );
 };
 
-export default Connect;
+export default Profile;

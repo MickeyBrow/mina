@@ -20,7 +20,7 @@ import Profile from "views/examples/Profile.js";
 import Message from "views/examples/Message";
 import Register from "views/examples/Register.js";
 import Login from "views/examples/Login.js";
-import Tables from "views/examples/Tables.js";
+import Connect from "views/examples/Connect.js";
 import Icons from "views/examples/Icons.js";
 
 var routes = [
@@ -49,7 +49,7 @@ var routes = [
     path: "/connect",
     name: "Connect",
     icon: "ni ni-world text-green",
-    component: Tables,
+    component: Connect,
     layout: "/admin"
   },
   {
