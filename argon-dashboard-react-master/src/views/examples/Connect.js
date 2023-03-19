@@ -156,18 +156,23 @@ const Connect = () => {
                 </Row>
               </CardHeader>
               <CardBody>
-                {connections.map((profile => {
-                  return (
-                    <>
-                      <label
-                      className="form-control-label"
-                      htmlFor="input-platform"
-                      >
-                        {profile}
-                      </label>
-                    </>
-                  )
-                }))}
+                {
+                  (connections.length === 0) ?
+                  <p>No connections here</p>
+                  :
+                  connections.map((profile => {
+                    return (
+                      <>
+                        <label
+                        className="form-control-label"
+                        htmlFor="input-platform"
+                        >
+                          {profile}
+                        </label>
+                      </>
+                    )
+                  }))
+                }
               </CardBody>
             </Card>
           </Col>
