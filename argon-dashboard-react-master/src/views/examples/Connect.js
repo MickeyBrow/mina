@@ -22,119 +22,34 @@ import {
   Card,
   CardHeader,
   CardBody,
-  FormGroup,
-  Form,
-  Input,
   Container,
   Row,
   Col
 } from "reactstrap";
 // core components
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import UserHeader from "components/Headers/UserHeader.js";
-import { db, storage } from "firebase_init";
-import { ref, child, get, update } from "firebase/database";
-import { ref as ref_storage, uploadBytes, listAll, getDownloadURL, deleteObject } from "firebase/storage";
-import { v4 } from 'uuid';
+import { db } from "firebase_init";
+import { ref, child, get } from "firebase/database";
 
 const currentUrl = window.location.href;
 const uid = currentUrl.split("/").pop();
 const baseUrl = currentUrl.split("/")[2];
 
-console.log(baseUrl + "/admin/connect/" + uid);
-
-function updateProfile() {
-  const userAge = document.getElementById("input-age").value;
-  const userCity = document.getElementById("input-city").value;
-  const userState = document.getElementById("input-state").value;
-  const userBio = document.getElementById("input-bio").value;
-  const userPlatform = document.getElementById("input-platform").value;
-  const userCategory = document.getElementById("input-category").value;
-  const userFirstName = document.getElementById("input-first-name").value;
-  const userLastName = document.getElementById("input-last-name").value;
-
-  const updates = {}
-  updates['Profiles/' + uid + "/age"] = userAge;
-  updates['Profiles/' + uid + "/city"] = userCity;
-  updates['Profiles/' + uid + "/state"] = userState;
-  updates['Profiles/' + uid + "/about_me"] = userBio;
-  updates['Profiles/' + uid + "/category"] = userCategory;
-  updates['Profiles/' + uid + "/platform"] = userPlatform;
-  updates['Profiles/' + uid + "/name"] = userFirstName + " " + userLastName;
-
-  update(ref(db), updates);
-  window.location.reload(false);
-}
-
 const Connect = () => {
-  const [fullName, setFullName] = useState("Full Name");
-  const [firstName, setFirstName] = useState();
-  const [lastName, setLastName] = useState();
-  const [email, setEmail] = useState("Email");
-  const [age, setAge] = useState();
-  const [userCity, setUserCity] = useState();
-  const [userState, setUserState] = useState();
-  const [userCategory, setUserCategory] = useState();
-  const [userBio, setUserBio] = useState();
-  const [userPlatform, setUserPlatform] = useState();
-
-  const [imageList, setImageList] = useState([]);
-  const [imageUpload, setImageUpload] = useState(null);
-
-  const [profilePicture, setProfilePicture] = useState("");
-
-  const uploadImage = () => {
-    if (imageUpload == null) return;
-    const imageRef = ref_storage(storage, `Users/${uid}/${imageUpload.name + v4()}`);
-    uploadBytes(imageRef, imageUpload)
-    .then(() => {
-      //Image uploaded successfully
-      console.log("Image Uploaded")
-    })
-  }
-
-  const updateAvi = (image) => {
-    setProfilePicture(image);
-    
-    const updates = {}
-    updates['Profiles/' + uid + "/avi"] = image;
-    update(ref(db), updates);
-  }
-
-  const deleteImage = (image) => {
-    // deleteObject(ref_storage(storage, `Users/${uid}/${image}`)).then(() => {
-    //   //Image was deleted
-    //   console.log("Image was deleted");
-    // }).catch((error) => {
-    //   //There was an error
-    // });
-  }
-
-  //Grab images for this user when the page loads
-  useEffect(() => {
-    listAll(ref_storage(storage, `Users/${uid}`)).then((response) => {
-      response.items.forEach((item) => {
-        getDownloadURL(item).then((url) => {
-          setImageList((prev) => [...prev, url]);
-        })
-      })
-    })
-  }, []);
+  const [connections, setConnections] = useState([]);
 
   const dbRef = ref(db);
-  get(child(dbRef, `Profiles/${uid}`)).then((snapshot) => {
+  get(child(dbRef, `Profiles/`)).then((snapshot) => {
     if (snapshot.exists()) {
-      setFullName(snapshot.val().name);
-      setEmail(snapshot.val().email);
-      setFirstName(snapshot.val().name.split(" ")[0]);
-      setLastName(snapshot.val().name.split(" ")[1]);
-      setUserCity(snapshot.val().city);
-      setUserState(snapshot.val().state);
-      setUserCategory(snapshot.val().category);
-      setUserBio(snapshot.val().about_me);
-      setUserPlatform(snapshot.val().platform);
-      setAge(snapshot.val().age);
-      setProfilePicture(snapshot.val().avi);
+      var optionsObject = snapshot.val();
+      var options = Object.values(snapshot.val());
+      options.forEach(user => {
+        if ((user["state"] === optionsObject[`${uid}`]["state"]) && (user["uid"] !== optionsObject[`${uid}`]["uid"]) && !(connections.includes(user["uid"]))) {
+          setConnections([...connections, user["uid"]]);
+        }
+      });
+      console.log(connections);
     } else {
       console.log("No data available");
     }
@@ -157,7 +72,6 @@ const Connect = () => {
                       alt="..."
                       id="user-profile-picture"
                       className="rounded-circle"
-                      src={profilePicture}
                       width="300"
                       height="200"
                     />
@@ -205,20 +119,20 @@ const Connect = () => {
                 </Row>
                 <div className="text-center">
                   <h3>
-                    {fullName}
-                    <span className="font-weight-light">, {age}</span>
+                    text
+                    <span className="font-weight-light">, Age</span>
                   </h3>
                   <div className="h5 font-weight-300">
                     <i className="ni location_pin mr-2" />
-                    {userCity}, {userState}
+                    city, state
                   </div>
                   <div className="h5 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
-                    {userPlatform} - {userCategory}
+                    Platform - Category
                   </div>
                   <div>
                     <i className="ni education_hat mr-2" />
-                    {userBio}
+                    Bio
                   </div>
                 </div>
               </CardBody>
@@ -229,12 +143,11 @@ const Connect = () => {
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">My account</h3>
+                    <h3 className="mb-0">Connections</h3>
                   </Col>
                   <Col className="text-right" xs="4">
                     <Button
                       color="primary"
-                      onClick={updateProfile}
                       size="sm"
                     >
                       Update
@@ -243,212 +156,18 @@ const Connect = () => {
                 </Row>
               </CardHeader>
               <CardBody>
-                <Form>
-                  <h6 className="heading-small text-muted mb-4">
-                    User information
-                  </h6>
-                  <div className="pl-lg-4">
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-age"
-                          >
-                            Age
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-age"
-                            type="text"
-                            defaultValue={age}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-email"
-                          >
-                            Email address
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-email"
-                            type="email"
-                            value={email}
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-first-name"
-                          >
-                            First name
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-first-name"
-                            type="text"
-                            defaultValue={firstName}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-last-name"
-                          >
-                            Last name
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-last-name"
-                            type="text"
-                            defaultValue={lastName}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-city"
-                          >
-                            City
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-city"
-                            type="text"
-                            defaultValue={userCity}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-state"
-                          >
-                            State
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-state"
-                            type="text"
-                            defaultValue={userState}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-platform"
-                          >
-                            Platform
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-platform"
-                            type="text"
-                            defaultValue={userPlatform}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-category"
-                          >
-                            Category
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-category"
-                            type="text"
-                            defaultValue={userCategory}
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </div>
-                  <hr className="my-4" />
-                  {/* Description */}
-                  <h6 className="heading-small text-muted mb-4">About me</h6>
-                  <div className="pl-lg-4">
-                    <FormGroup>
-                      <label>Bio</label>
-                      <Input
-                        className="form-control-alternative"
-                        defaultValue={userBio}
-                        id="input-bio"
-                        rows="4"
-                        type="textarea"
-                      />
-                    </FormGroup>
-                  </div>
-                  <hr className="my-4" />
-                  <h6 className="heading-small text-muted mb-4">Profile Picture</h6>
-                  <div className="pl-lg-4">
-                    <FormGroup>
-                      <Col lg="6">
-                        <Row className="align-items-center">
-                          <Col xs="8">
-                            <Input
-                              type="file"
-                              onChange={(event) => {setImageUpload(event.target.files[0]);}}
-                              accept="image/png, image/jpeg"
-                            />
-                          </Col>
-                          <Col className="text-right" xs="4">
-                            <Button
-                              color="primary"
-                              onClick={uploadImage}
-                              size="sm"
-                            >
-                              Upload Picutre
-                            </Button>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </FormGroup>
-                  </div>
-                  <h6 className="heading-small text-muted mb-4">Current Picutres</h6>
-                  <div className="pl-lg-4">
-                    <FormGroup>
-                      <Row>
-                        <div>
-                          {imageList.map((url => {
-                            return (
-                              <>
-                                <div>
-                                  <Button onClick={() => updateAvi(url)}>
-                                    <img
-                                      alt="..."
-                                      src={url}
-                                      width="200"
-                                      height="200"
-                                    />
-                                  </Button>
-                                  <Button onClick={() => deleteImage(url)}>Delete</Button>
-                                </div>
-                              </>
-                            )
-                          }))}
-                        </div>
-                      </Row>
-                    </FormGroup>
-                  </div>
-                </Form>
+                {connections.map((profile => {
+                  return (
+                    <>
+                      <label
+                      className="form-control-label"
+                      htmlFor="input-platform"
+                      >
+                        {profile}
+                      </label>
+                    </>
+                  )
+                }))}
               </CardBody>
             </Card>
           </Col>
