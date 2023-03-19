@@ -23,6 +23,7 @@ import {
   CardHeader,
   CardBody,
   FormGroup,
+  FormFeedback,
   Form,
   Input,
   InputGroupAddon,
@@ -33,29 +34,43 @@ import {
 } from "reactstrap";
 
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-
-function onSignIn() {
-  const userEmail = document.getElementById("userEmail").value;
-  const userPassword = document.getElementById("userPassword").value;
-
-  const auth = getAuth();
-  signInWithEmailAndPassword(auth, userEmail, userPassword)
-  .then((userCredential) => {
-    // Signed in 
-    window.location.replace("http://localhost:3000/admin/index/" + userCredential.user.uid);
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-  });
-}
+import React, { useState } from "react";
 
 function onCreateAccount() {
   window.location.href = "http://localhost:3000/auth/register";
 }
 
 const Login = () => {
+  const [userNotFound, setUserNotFound] = useState(false);
+  const [passwordIncorrect, setPasswordIncorrect] = useState(false);
+
+  const onSignIn = () => {
+    const userEmail = document.getElementById("userEmail").value;
+    const userPassword = document.getElementById("userPassword").value;
+  
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, userEmail, userPassword)
+    .then((userCredential) => {
+      // Signed in 
+      window.location.replace("http://localhost:3000/admin/index/" + userCredential.user.uid);
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      console.log(errorCode);
+      switch(errorCode) {
+        case "auth/user-not-found":
+          setUserNotFound(true);
+          console.log("email is incorrect");
+          break;
+        case "auth/wrong-password":
+          setPasswordIncorrect(true);
+          console.log("password is incorrect");
+          break;
+      }
+    });
+  }
+
   return (
     <>
       <Col lg="5" md="7">
@@ -118,7 +133,10 @@ const Login = () => {
                     type="email"
                     autoComplete="new-email"
                     id="userEmail"
+                    invalid={userNotFound}
+                    onChange={() => setUserNotFound(false)}
                   />
+                  <FormFeedback invalid>Email not found. Try signing up</FormFeedback>
                 </InputGroup>
               </FormGroup>
               <FormGroup>
@@ -133,7 +151,10 @@ const Login = () => {
                     type="password"
                     autoComplete="new-password"
                     id="userPassword"
+                    invalid={passwordIncorrect}
+                    onChange={() => setPasswordIncorrect(false)}
                   />
+                  <FormFeedback invalid>Wrong password.</FormFeedback>
                 </InputGroup>
               </FormGroup>
               <div className="custom-control custom-control-alternative custom-checkbox">
