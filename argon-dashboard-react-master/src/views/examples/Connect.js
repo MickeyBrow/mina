@@ -38,6 +38,7 @@ const baseUrl = currentUrl.split("/")[2];
 
 const Connect = () => {
   const [connections, setConnections] = useState([]);
+  const [firstConnection, setFirstConnection] = useState([]);
 
   useEffect(() => {
     const dbRef = ref(db);
@@ -45,11 +46,18 @@ const Connect = () => {
       if (snapshot.exists()) {
         var optionsObject = snapshot.val();
         var options = Object.values(snapshot.val());
-        options.forEach(user => {
-          if (user["state"] === optionsObject[`${uid}`]["state"]) {
-            setConnections(current => [...current, user]);
-          }
-        });
+        if(options.length === 1){
+          setFirstConnection(options[0]);
+        }
+        else if(options.length > 1){
+          setFirstConnection(options[0])
+          options.shift();
+          options.forEach(user => {
+            if ((user["state"] === optionsObject[`${uid}`]["state"]) && !(uid === user["uid"])) {
+              setConnections(current => [...current, user]);
+            }
+          });
+        };
       } else {
         console.log("No data available");
       }
@@ -66,7 +74,7 @@ const Connect = () => {
         <Row>
           <Col className="order-xl-2 mb-5 mb-xl-0" xl="4">
           {
-            (connections.length === 0) ?
+            ((connections.length === 0) || (firstConnection.length === 0)) ?
             null
             :
             <Card className="card-profile shadow">
@@ -79,7 +87,7 @@ const Connect = () => {
                       className="rounded-circle"
                       width="300"
                       height="200"
-                      src={connections[0]["avi"]}
+                      src={firstConnection["avi"]}
                     />
                   </div>
                 </Col>
@@ -109,20 +117,20 @@ const Connect = () => {
                 </Row>
                 <div className="text-center">
                   <h3>
-                    {connections[0]["name"]}
-                    <span className="font-weight-light">, {connections[0]["age"]}</span>
+                    {firstConnection["name"]}
+                    <span className="font-weight-light">, {firstConnection["age"]}</span>
                   </h3>
                   <div className="h5 font-weight-300">
                     <i className="ni location_pin mr-2" />
-                    {connections[0]["city"]}, {connections[0]["state"]}
+                    {firstConnection["city"]}, {firstConnection["state"]}
                   </div>
                   <div className="h5 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
-                    {connections[0]["platform"]} - {connections[0]["category"]}
+                    {firstConnection["platform"]} - {firstConnection["category"]}
                   </div>
                   <div>
                     <i className="ni education_hat mr-2" />
-                    {connections[0]["about_me"]}
+                    {firstConnection["about_me"]}
                   </div>
                 </div>
               </CardBody>
@@ -136,25 +144,17 @@ const Connect = () => {
                   <Col xs="8">
                     <h3 className="mb-0">Connections</h3>
                   </Col>
-                  <Col className="text-right" xs="4">
-                    <Button
-                      color="primary"
-                      size="sm"
-                    >
-                      Update
-                    </Button>
-                  </Col>
                 </Row>
               </CardHeader>
               <CardBody>
-                {
-                  (connections.length === 0) ?
-                  <p>No connections here</p>
-                  :
-                  connections.map(profile => {
-                    return (
-                      <>
-                        <CardHeader className="bg-white border-0">
+                <CardHeader className="bg-white border-0">
+                  {
+                    (connections.length === 0 || firstConnection.length === 0) ?
+                    <p>No connections here</p>
+                    :
+                    connections.map(profile => {
+                      return (
+                        <>
                           <Row className="align-items-center">
                             <Col xs="8">
                               <h3 className="mb-0">{profile["name"]}</h3>
@@ -174,11 +174,11 @@ const Connect = () => {
                               </Button>
                             </Col>
                           </Row>
-                        </CardHeader>
-                      </>
-                    )
-                  })
-                }
+                        </>
+                      )
+                    })
+                  }
+                </CardHeader>
               </CardBody>
             </Card>
           </Col>
