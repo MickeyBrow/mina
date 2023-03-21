@@ -46,8 +46,8 @@ const Connect = () => {
         var optionsObject = snapshot.val();
         var options = Object.values(snapshot.val());
         options.forEach(user => {
-          if ((user["state"] === optionsObject[`${uid}`]["state"]) && (user["uid"] !== optionsObject[`${uid}`]["uid"]) && !(connections.includes(user["uid"]))) {
-            setConnections([...connections, user]);
+          if (user["state"] === optionsObject[`${uid}`]["state"]) {
+            setConnections(current => [...current, user]);
           }
         });
       } else {
@@ -58,8 +58,6 @@ const Connect = () => {
     });
   }, []);
 
-
-  console.log(connections);
   return (
     <>
       <UserHeader />
