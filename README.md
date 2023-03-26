@@ -1,17 +1,33 @@
-# mina
+## Project Name & Pitch
 
-- March 5 2023 \
-    This project is suppose to be an analytics tool for aspiring influceners. The plan so far is to have 2 main sections. The dashboard which will show the analytics of all linked accounts. This would show things like total views, total likes, total engagments (whatever I can get from the different APIs obviously). Ideally, I would also like to allow for the user to look at the seperate platforms analytics as well.
+Mina
 
-    The second section will be what im calling "Connect". This would be like a dating app but for content creators to link up for collabs. The second could be a tinder clone until I am able to think of something more creative for it.
+A web app created to provide tools for content creators to use in order to grow their business through interactions and analytics.
 
-    Another section would have to be a profile section that allows for the content creator to customize their profile for the connect part. Basically just allowing for the user to upload a profile picture, add a bio, and their location that they want to look at for the connect.\
+## Project Status
 
-- March 6 2023 \
-    Trying to set up a realtime database to the app. This would allow for me to get the current users data using the uid that is passed in the URL. The intial step is to try and get the users name, email, and uid to be saved in the DB when ever their account is made on the register page. 
-    
-    For some reason the DB is not saving the users data when creating the account. Need to look at a tutorial or something to see how other people implement the DB. 
-    
-    (Later in the day) Got the DB working so now when a new account is made, a new field is made under the profile folder with the uid, name, and email.
-    
-    Also did some updating to the profile page so the info from the DB populates the page. Then started the barebones for allowing the user to update their information. Still have to finish that though.
+This project is currently in development. Users can currently sign up / sign in and update their profiles to include their information, profile picture, and a short about me. Functionality for the "Connect" tool is currently in progress.
+
+## Project Screen Shot(s)
+
+#### Example:   
+
+[ PRETEND SCREEN SHOT IS HERE ]
+
+[ PRETEND OTHER SCREEN SHOT IS HERE ]
+
+## Tools to be implemented
+
+- Connect: This will be a place where creators are able to see other creators in their state and can choose to send a message to set up a collaboration or not. The inital idea is something similar to a dating app but just for the collaborations between content creators that use the web app.
+- Message: This will be a messaging tool that allows the user to message content creators that they have accepted in the "Connect" tool. 
+- Dashboard: This will a dashboard that will be a hub for analytics and would show the combined and seperated analytics for any user connected social medias (youtube, tiktok, twitch, etc.). <---- Allowed social medias are based on if the companies have API that allow for getting the user's video data!
+
+## Reflection
+
+This is a side project with the intention of getting experience with building out a project idea. Project goals were to using new technologies and strengthening skills learned from first job (react, APIs, html, reading documentation and learning new technology).
+
+The idea of this project is to build a dashboard that allowed for the people to see their tiktok / youtube / instagram analytics (seperated and combined). The idea to also add a feature that allowed for creators to collab with each other was also added. The process was started by finding a free react template that I could plug my own backend to it. 
+
+While there have been a few different challenges thus far, the most difficult one has been trying to figure out a better system for querying the realtime database with firebase. Currently, I am just looping through all accounts and only displaying the profiles that live in the same state as the user. However, this is very ineffecient as the user count increases because of the O(N) that this current system has. Still working on trying to get a more effecient way.
+
+Overall, the technologies implemented in this project are React, Firebase, and some javascript. Eventually, I think it will be nice to add flask for a backend that will handle any api calls that need to be made for the data. I chose to find a premade react app so that I can focus more on the implementation and not really having to handle designing a whole frontend from scratch. 
