@@ -12,9 +12,11 @@ This project is currently in development. Users can currently sign up / sign in 
 
 #### Example:   
 
-[ PRETEND SCREEN SHOT IS HERE ]
+Login:
+<img width="1662" alt="Screen Shot 2023-03-26 at 4 50 21 PM" src="https://user-images.githubusercontent.com/119630103/227809775-3b117a37-3ef2-4108-8c20-b3f6afa0f986.png">
 
-[ PRETEND OTHER SCREEN SHOT IS HERE ]
+Profile page:
+<img width="1658" alt="Screen Shot 2023-03-26 at 4 51 15 PM" src="https://user-images.githubusercontent.com/119630103/227809783-68e6ea72-76be-4d04-8714-c765ef741d07.png">
 
 ## Tools to be implemented
 
