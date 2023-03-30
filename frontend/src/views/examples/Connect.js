@@ -31,6 +31,7 @@ import React, { useState, useEffect } from "react";
 import UserHeader from "components/Headers/UserHeader.js";
 import { db } from "firebase_init";
 import { ref, child, get, update } from "firebase/database";
+import axios from "axios";
 
 const currentUrl = window.location.href;
 const uid = currentUrl.split("/").pop();
@@ -39,7 +40,8 @@ const baseUrl = currentUrl.split("/")[2];
 
 const Connect = () => {
   const [connections, setConnections] = useState([]);
-
+  const [test, setTest] = useState(null);
+  
   useEffect(() => {
     const dbRef = ref(db);
     get(child(dbRef, `Profiles/`)).then((snapshot) => {
@@ -68,6 +70,25 @@ const Connect = () => {
   const onDecline = () => {
     //Add it to the decline field in the DB
     //Remove the first from connection
+  }
+
+  const testButton = () => {
+    axios({
+      method: "GET",
+      url:"/profile",
+    })
+    .then((response) => {
+      const res = response.data
+      setTest(({
+        profile_name: res.name,
+        about_me: res.about}))
+    }).catch((error) => {
+      if (error.response) {
+        console.log(error.response)
+        console.log(error.response.status)
+        console.log(error.response.headers)
+        }
+    })
   }
 
   return (
@@ -164,10 +185,25 @@ const Connect = () => {
                   <Col xs="8">
                     <h3 className="mb-0">Connections</h3>
                   </Col>
+                  <Col className="text-right" xs="4">
+                    <Button
+                      color="primary"
+                      onClick={testButton}
+                      size="sm"
+                    >
+                      Test
+                    </Button>
+                  </Col>
                 </Row>
               </CardHeader>
               <CardBody>
                 <CardHeader className="bg-white border-0">
+                  {test &&
+                  <div>
+                    <p>Profile name: {test.profile_name}</p>
+                    <p>About me: {test.about_me}</p>
+                  </div>
+                  }
                   {
                     (connections.length === 0) ?
                     <p>No connections here</p>
