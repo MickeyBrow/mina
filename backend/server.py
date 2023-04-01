@@ -1,8 +1,15 @@
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route('/profile')
 def hello():
-    return 'Hello, World!'
+    uid = request.args.get('uid')
+    print(uid)
+    response_body = {
+        "name": str(uid),
+        "about" :"Hello! I'm a full stack developer that loves python and javascript"
+    }
+
+    return response_body
