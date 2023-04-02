@@ -17,7 +17,6 @@ def profile():
         user = doc_ref.get()
         return user.to_dict()
     else:
-        print("test", request.args.get('platform'))
         user = {
             'about_me': request.args.get('bio'),
             'age': request.args.get('age'),
@@ -28,10 +27,20 @@ def profile():
             'state': request.args.get('state'),
         }
         doc_ref = firestore_client.collection('users').document(uid)
-        doc_ref.set(user)
+        doc_ref.update(user)
 
         user = doc_ref.get()
         return user.to_dict()
+
+@app.route('/avi', methods=['POST'])
+def avi():
+    uid, image = request.args.get('uid'), request.args.get('image')
+
+    doc_ref = firestore_client.collection('users').document(uid)
+    user = {'avi': image}
+    doc_ref.update(user)
+    return user
+
 
 @app.route('/auth', methods=['POST'])
 def auth():
@@ -51,4 +60,3 @@ def auth():
     }
     doc_ref = firestore_client.collection('users').document(uid)
     doc_ref.set(user)
-    return "Sign Up"
