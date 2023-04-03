@@ -41,6 +41,13 @@ def avi():
     doc_ref.update(user)
     return user
 
+@app.route('/imageUpload', methods=['POST'])
+def uploadImage():
+    uid, image = request.args.get('uid'), request.args.get('image')
+
+    
+    return None
+
 
 @app.route('/auth', methods=['POST'])
 def auth():
@@ -57,6 +64,8 @@ def auth():
         'name': name,
         'platform': '',
         'state': '',
+        'images': {},
     }
     doc_ref = firestore_client.collection('users').document(uid)
     doc_ref.set(user)
+    return None
