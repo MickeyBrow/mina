@@ -1,9 +1,10 @@
 from flask import Flask, request
+import uuid
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, storage
 
 cred = credentials.Certificate("serviceAccountKey.json")
-app = firebase_admin.initialize_app(cred)
+app = firebase_admin.initialize_app(cred, {'storageBucket': 'mina-5f4b8.appspot.com'})
 firestore_client = firestore.client()
 
 app = Flask(__name__)
@@ -37,16 +38,30 @@ def avi():
     uid, image = request.args.get('uid'), request.args.get('image')
 
     doc_ref = firestore_client.collection('users').document(uid)
+    print(image)
     user = {'avi': image}
     doc_ref.update(user)
     return user
 
 @app.route('/imageUpload', methods=['POST'])
 def uploadImage():
-    uid, image = request.args.get('uid'), request.args.get('image')
+    uid, imageUid = request.args.get('uid'), request.args.get('imageUid')
 
+    #add the image uid to DB
+    doc_ref = firestore_client.collection('users').document(uid)
+    middle = doc_ref.get()
+    curr_images = middle.get('images')
+    if not curr_images:
+        curr_images = {'0' : imageUid}
+    else:
+        val = list(curr_images.keys())[-1]
+        i = int(val) + 1
+        curr_images[str(i)] = imageUid 
+        
+    doc_ref.update({'images' : curr_images})
+    return 
     
-    return None
+
 
 
 @app.route('/auth', methods=['POST'])
