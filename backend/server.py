@@ -1,5 +1,6 @@
 from flask import Flask, request
 import uuid
+import urllib.parse
 import firebase_admin
 from firebase_admin import credentials, firestore, storage
 
@@ -37,10 +38,14 @@ def profile():
 def avi():
     uid, image = request.args.get('uid'), request.args.get('image')
 
+    parts = image.split('/')
+    end = '%2F'.join(parts[7:])
+    begin = '/'.join(parts[:7])
+
     doc_ref = firestore_client.collection('users').document(uid)
-    print(image)
-    user = {'avi': image}
+    user = {'avi': begin + "/" + end}
     doc_ref.update(user)
+    
     return user
 
 @app.route('/imageUpload', methods=['POST'])
@@ -84,3 +89,5 @@ def auth():
     doc_ref = firestore_client.collection('users').document(uid)
     doc_ref.set(user)
     return None
+
+#how to decode url to have %2f instead of /?
