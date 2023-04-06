@@ -66,9 +66,6 @@ def uploadImage():
     doc_ref.update({'images' : curr_images})
     return 
     
-
-
-
 @app.route('/auth', methods=['POST'])
 def auth():
     email, uid, name = request.args.get('email'), request.args.get('uid'), request.args.get('name')
@@ -90,4 +87,19 @@ def auth():
     doc_ref.set(user)
     return None
 
-#how to decode url to have %2f instead of /?
+@app.route('/connections', methods=['GET'])
+def connection():
+    uid = request.args.get('uid')
+
+    doc_ref = firestore_client.collection('users').document(uid)
+    middle = doc_ref.get()
+    state = middle.get('state')
+
+    profile_ref = firestore_client.collection('users').where('state', '==', state).where('uid', '!=', uid)
+    potentials = profile_ref.get()
+    response = {}
+    
+    for i in range(len(potentials)):
+        response[str(i)] = potentials[i].to_dict()
+
+    return response
