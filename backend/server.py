@@ -81,25 +81,61 @@ def auth():
         'name': name,
         'platform': '',
         'state': '',
+        'contacts': {},
+        'reject': {},
         'images': {},
     }
     doc_ref = firestore_client.collection('users').document(uid)
     doc_ref.set(user)
     return None
 
-@app.route('/connections', methods=['GET'])
+@app.route('/connections', methods=['GET', 'POST'])
 def connection():
     uid = request.args.get('uid')
 
-    doc_ref = firestore_client.collection('users').document(uid)
-    middle = doc_ref.get()
-    state = middle.get('state')
+    if request.method == 'GET':
+        doc_ref = firestore_client.collection('users').document(uid)
+        middle = doc_ref.get()
+        state = middle.get('state')
 
-    profile_ref = firestore_client.collection('users').where('state', '==', state).where('uid', '!=', uid)
-    potentials = profile_ref.get()
-    response = {}
+        profile_ref = firestore_client.collection('users').where('state', '==', state).where('uid', '!=', uid)
+        potentials = profile_ref.get()
+        response = {}
+        
+        for i in range(len(potentials)):
+            response[str(i)] = potentials[i].to_dict()
+
+        return response
     
-    for i in range(len(potentials)):
-        response[str(i)] = potentials[i].to_dict()
+    else:
+        accept, decline = request.args.get('accept'), request.args.get('decline')
+        doc_ref = firestore_client.collection('users').document(uid)
 
-    return response
+        if accept:
+            # Here we will add the connection to the accept object
+            middle = doc_ref.get()
+            contacts = middle.get('contacts')
+
+            if not contacts:
+                contacts = {'0' : accept}
+            else:
+                val = list(contacts.keys())[-1]
+                i = int(val) + 1
+                contacts[str(i)] = accept 
+            
+            doc_ref.update({'accept' : contacts})
+            return {}
+        if decline:
+            # Here add the connection to the decline object
+            middle = doc_ref.get()
+            reject = middle.get('reject')
+
+            if not reject:
+                reject = {'0' : decline}
+            else:
+                val = list(reject.keys())[-1]
+                i = int(val) + 1
+                reject[str(i)] = decline 
+            
+            doc_ref.update({'reject' : reject})
+            return {}
