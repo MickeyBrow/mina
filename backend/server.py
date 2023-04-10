@@ -96,14 +96,18 @@ def connection():
     if request.method == 'GET':
         doc_ref = firestore_client.collection('users').document(uid)
         middle = doc_ref.get()
-        state = middle.get('state')
+        state, accepts, rejects = middle.get('state'), middle.get('contacts'), middle.get('reject')
+
+        filter = set(list(accepts.values()) + list(rejects.values()))
 
         profile_ref = firestore_client.collection('users').where('state', '==', state).where('uid', '!=', uid)
         potentials = profile_ref.get()
         response = {}
         
         for i in range(len(potentials)):
-            response[str(i)] = potentials[i].to_dict()
+            temp = potentials[i].to_dict()
+            if temp['uid'] not in filter:
+                response[str(i)] = potentials[i].to_dict()
 
         return response
     
@@ -123,7 +127,7 @@ def connection():
                 i = int(val) + 1
                 contacts[str(i)] = accept 
             
-            doc_ref.update({'accept' : contacts})
+            doc_ref.update({'contacts' : contacts})
             return {}
         if decline:
             # Here add the connection to the decline object
